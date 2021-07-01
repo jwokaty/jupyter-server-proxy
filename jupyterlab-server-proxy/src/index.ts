@@ -40,6 +40,7 @@ async function activate(app: JupyterFrontEnd, launcher: ILauncher, restorer: ILa
       command: command,
       args: widget => ({
         url: widget.content.url,
+        launcher_url: widget.content.launcher_url,
         title: widget.content.title.label,
         newBrowserTab: false,
         id: widget.content.id
@@ -54,9 +55,10 @@ async function activate(app: JupyterFrontEnd, launcher: ILauncher, restorer: ILa
       const id = args['id'] as string;
       const title = args['title'] as string;
       const url = args['url'] as string;
+      const launcher_url = args['launcher_url'] as string;
       const newBrowserTab = args['newBrowserTab'] as boolean;
       if (newBrowserTab) {
-        window.open(url, '_blank');
+        window.open(url + (launcher_url ? launcher_url + '/' : ''), '_blank');
         return;
       }
       let widget = tracker.find((widget) => { return widget.content.id == id; });
@@ -81,13 +83,14 @@ async function activate(app: JupyterFrontEnd, launcher: ILauncher, restorer: ILa
     }
 
     const url = PageConfig.getBaseUrl() + server_process.name + '/';
+    const launcher_url = server_process.launcher_url;
     const title = server_process.launcher_entry.title;
     const newBrowserTab = server_process.new_browser_tab;
     const id = namespace + ':' + server_process.name;
     const launcher_item : ILauncher.IItemOptions = {
       command: command,
       args: {
-        url: url,
+        url: url + (launcher_url ? launcher_url + '/': ''),
         title: title + (newBrowserTab ? ' [↗]': ''),
         newBrowserTab: newBrowserTab,
         id: id
